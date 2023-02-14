@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "webfitness-377103",
+  "private_key_id": "e84645eb78d7981302b77b56fa486954abde6ed2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7GkMMIcdwFeet\nDVizwWm9YS+aWBIEn2tVqv4STyWRpq6NG/C46xMb6/HoQbQ/dgOVqbGVT9lY2Cs+\nvRqPiLIWVHlWlHFwIc04dRx0YDsTV+Fi2swuLI33LIm6TPwbsuwzmPQ/TeGOFSc1\nn1AkKaOiQqhG+Va/AY2ast/G1bjtCWLQBM9wMH2KtC1bdIf5g6HQAp83HkwjdbYp\nJ3CbrtrYw0gr/EFJQ1KbAXjQVvpY+ZWfkc14cH5FFMMBf1MQHBITdYKbChYlVLih\nu1sqGQntcqmuLZG6RX3Cq2Fa1SZItJ95e61aticvKEdjyNneVp0SDPmg0BTP2sGl\nhe+diRhVAgMBAAECggEAA4UR6+ac6+mz3fBfFmyc3zxbRlzdkZ+fbGgd10ZDrliF\n2y9d1uneD2lf3FOT0WMYXBjOwMCnHujJ3zGG4pFNJl1R0XjmNrPZOobZMYKOpoV4\nh/NNRqvP1ORytY+w+3VqVnxMPyMN5tKwHy4WP40NsngjxBEv0TBHryYXzoqZ0Hbc\nqXhJccvOOi6w9iczcs/Kyk9uMKQosHzhOCK1ask1treLEPf6hiQvCYGjB/P1jxbj\nvtyFBWVD/vTjxSJvihJV7sqTaKiKHCMj/FVz+a4wn31SN4Dj3ZZJRkajHOFPmB7H\nsK2Nrlvpu87mIYjRSKQAmZ+CnpTWyphSqYgFCWgyMQKBgQDq5eg9GyZKj7Htid/6\nT9vkOO7gqYb40PzkQlhm6COc3ja5ztyZkaXyc4PY2mnrrp8JtKFv4xonicj49gFp\nGCXn13SPTQekafCIXPuvbSFbm0YRZcuTRlw2C4JUADnxfdp15mtuWq7CbMzdwA74\nhSu6TdNDAG9sYaHb9gW0vSu2RQKBgQDL6SxJ4K3LMRn+j/+dtxoblgmfK2K9AOnp\neSEqAW19dUdYXfWw1+lspb7JcraZzCxDCu1sdGseOqvBFOOwZBg/OW28QNeqkR8Q\nFP0v8O6/qK0NdXDrYHFnODh6Uz5QamYo4tf9WBvXhjmFNd1ZwIsZmjT9t6J4PeCY\nl3zojeXC0QKBgQCUkLij/Unomp2kaTF59YxT+hZLja1KLZPlInkbDPOJQZpHRqiL\nkGzuvVTEkM+xOo5n6xC33WErZJ/xplYaDCXdTo3wHH4a5M420Oh2eYVBlSFp24I4\nMaYcoIbbbhE3xauoKgYEk+I4IewozFIrqL6RZKubkujmGZHvttjBCWxeKQKBgHXl\nh1nfshx9c04f6+dAarPwd/ezmg81bAk1o9spoCidmnaZPOjWrXvICRtoW/NofV71\n/nhqh1SfD5c/gLYH6Y0Eo1HpG8jex1sBB7KkVyYxXH0fnf45cNgBRYZUgv7zxcV2\nAvPT8aUXUkKW9jhifwp6gpD/j8x92lHfpLTA9ktBAoGAMhawFHCFgUR8lss9xWlU\nIGnGF0CUQBnCFkzpstOwcB3CHmESBc+ID9oZLlL1u+SY7bG+AIX5qEWvpIYxRE5L\noIV6qCgqrMEWtc3poN3qtNsCC7ZHVi/N4xDPzadZyY0YUH1kC/huUG5vOVgfg48j\nkr/cOr8UeT2QZvIwM1V/3cc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "thematic-fitness@webfitness-377103.iam.gserviceaccount.com",
+  "client_id": "117622802814084319741",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/thematic-fitness%40webfitness-377103.iam.gserviceaccount.com"
+}
