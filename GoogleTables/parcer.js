@@ -1,14 +1,15 @@
 const D = require("./database");
 const {GoogleSpreadsheet} = require("google-spreadsheet");
 const cred = require("./webfitness-377103-e84645eb78d7.json");
-module.exports
+const {tableexist} = require("./database");
 
 
-module.exports={Distributer}
+module.exports={Distributer,mark_comment,getTraining}
 const alphabet=["A","B","C","D","E","F","G","H","I","J","K","L"]
 async function Distributer(Access,mobile,executedex,ex,val){
     Use("1G9LFJoWUq8OxOW19DCMKRwC8PHxMebIS97-4EA4Oz2M",Access,executedex.toString(),ex.toString(),val.toString())
-    if (Access%2==1){// И таблица существует
+    tab=await tableexist(mobile)
+    if (Access%2==1&tab==0){
 
     }
 }
@@ -24,9 +25,6 @@ async function Use(googletable,date,executedex,ex,val) {
    var execises = fillJSON(rows)
     i=parseInt(date, 10)
     LoadAndMark(execises,executedex,i,rows,ex,val,sheet)
-
-
-
 
 }
 function fillJSON(rows){
@@ -137,3 +135,56 @@ async function updateCell(cell,sheet,execiseValue){
     sheet.getCellByA1(cell).value=execiseValue.toString()
     await sheet.saveUpdatedCells()
 }
+
+async function mark_comment(executedExecise,date,Comment,googletable){
+    const doc = new GoogleSpreadsheet(googletable);
+    doc.useServiceAccountAuth(cred);
+    await doc.loadInfo(); // loads document properties and worksheets
+    const sheet = doc.sheetsByIndex[0];
+    const rows = await sheet.getRows();
+
+    var execises = fillJSON(rows)
+    i=parseInt(date, 10)
+    var cursor
+    execises.forEach(train=>{
+        if (train.name[0]==executedExecise){
+            cursor=Number(train.start)+Number(date)+1
+            console.log("Курсор на ячейке номер"+cursor)
+        }
+
+    })
+    cell="A"+cursor.toString()
+    await sheet.loadCells(cell)
+    sheet.getCellByA1(cell).value=Comment.toString()
+    await sheet.saveUpdatedCells()
+}
+
+async function getTraining(googletable){
+    console.log("eee")
+    const doc = new GoogleSpreadsheet(googletable);
+    doc.useServiceAccountAuth(cred);
+    await doc.loadInfo(); // loads document properties and worksheets
+    const sheet = doc.sheetsByIndex[0];
+    const rows = await sheet.getRows();
+    interv=rows[0]._sheet.headerValues[0]
+    Letter=interv[0]
+    prim=Number(interv.slice(1))
+    sec=Number(rows[0]._sheet.headerValues[1].slice(1))
+    massive=[]
+     for (i=prim;i<=sec;i++){
+
+        cell=Letter+i.toString()
+        await sheet.loadCells(cell)
+        cell_val=sheet.getCellByA1(cell).value
+        massive.push(cell_val)
+    }
+     console.log(massive)
+    return massive
+    //await sheet.saveUpdatedCells()
+
+}
+async function f(){
+    k=await getTraining("1G9LFJoWUq8OxOW19DCMKRwC8PHxMebIS97-4EA4Oz2M")
+    console.log(k)
+}
+

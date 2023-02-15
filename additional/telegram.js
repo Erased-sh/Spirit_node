@@ -7,6 +7,10 @@ function alert_user(chat_id){
     bot.sendMessage(chat_id, 'Ваш аккаунт одобрен администатором')
 }
 
+function train_is_there(chat_id){
+    bot.sendMessage(chat_id,"ваша тренировка доступна")
+}
+
 module.exports={
     alert_user
 }
