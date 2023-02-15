@@ -10,24 +10,29 @@ const pool=new Pool({
     database:"WebFitness"
 })
 
-async function select_approved(number,chat_id,jso){
-    pool.query("Select approved from mishabot where number = $1",[number.toString()],async (err,res)=>{
-        pool.close
-        telegram_alert(chat_id,res.rows[0]["approved"],jso)
-    })
+async function select_approved(number){
+    return (await pool.query("Select approved from mishabot where number = $1",[number.toString()])).rows[0]["approved"]
 }
-async function NotifyUser(number,jso){
-    pool.query("Select chat_id from mishabot where number = $1",[number.toString()],(err,res)=>{
-        pool.close
-        select_approved(number,res.rows[0]["chat_id"],jso)
-    })
+async function select_chat_id(number){
+    return (await pool.query("Select chat_id from mishabot where number = $1",[number.toString()])).rows[0]["chat_id"]
 }
-
-
-
 async function geDate(number) {
-    const result = await pool.query("Select date from mishabot where number = $1",[number.toString()])
-    return result.rows[0]["date"]
+    return (await pool.query("Select date from mishabot where number = $1",[number.toString()])).rows[0]["date"]
+}
+async function NotifyUser(number,now){
+     if(await check(number,now)){
+       teleg.alert_user(await select_chat_id(number))
+     }
+}
+
+async function select_google_sheets(number){
+    return (await pool.query("Select googleforms from mishabot where number = $1",[number.toString()])).rows[0]["googleforms"]
+}
+
+async function check(number,now){
+   k= (await select_approved(number))!=now
+    console.log(k)
+    return k
 }
 
 async function tableexist(number){
@@ -39,16 +44,6 @@ async function tableexist(number){
 
     })
     return massive.length
-}
-
-tableexist(";")
-
-
-async function telegram_alert(chat_id, approved,jso){
-    console.log(jso)
-    console.log(approved)
-    if(approved!=jso){
-      teleg.alert_user(chat_id)}
 }
 
 function UpdateExeciseWeight(massive){
@@ -65,10 +60,10 @@ function UpdateE(massive){
 function UpdateProperties(name,value,mobile){
     pool.query("UPDATE mishabot Set "+name+" = $1 where number = $2",[value,mobile])
 }
-
-function u(allData){
+async function getUsers(){
     var massive=[]
-    allData.forEach(row=>{
+    const All_Users_In_Database=await pool.query("Select * FROM mishabot")
+    All_Users_In_Database.rows.forEach(row=>{
         const responceUser={
             "mobile":row["number"] ,
             "googlesheets":  row["googleforms"],
@@ -78,8 +73,9 @@ function u(allData){
         }
         massive.push(responceUser)
     })
+    console.log(massive)
     return massive
 }
 
 
-module.exports={UpdateE,u,pool,UpdateProperties,telegram_alert,NotifyUser,geDate,tableexist}
+module.exports={UpdateE,getUsers,pool,UpdateProperties,NotifyUser,geDate,tableexist,select_google_sheets}

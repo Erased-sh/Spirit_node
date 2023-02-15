@@ -1,100 +1,55 @@
 const express = require('express');
-const DB=require("./database")
+const DB=require("./additional/database")
+const V_S=require("./files/Stream/video_share")
 const fs = require('fs')
-const cc=require('./contentchecker')
-
+const cc=require('./files/contentchecker')
+const additional=require('./files/Additional')
+const marker=require("./GoogleTables/parcer")
 const app = express();
 const bodyParser = require('body-parser');
-const {getNumber, rem} = require("./contentchecker");
-const {telegram_alert} = require("./database");
+const {getNumber, rem} = require("./files/contentchecker");
+const {telegram_alert, NotifyUser, selectDate} = require("./additional/database");
+const {mark_comment, getTraining} = require("./GoogleTables/parcer");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-
- 
-app.get("/mobileapplication", async (req, res, next)=>{
- console.log("Wow")
- res.setHeader("content-type","application/json")
- const querry="Select * FROM mishabot"
- DB.pool.query(querry, async (err, re) => {
-  allData = re.rows
-  m = await DB.u(allData)
-  res.json(m)})
-});
-
 app.get('/video/:id', async (req, res) => {
- console.log("started video search")
- var adress=req.params.id
-
-var videoPath = '/Users/shaya/PycharmProjects/MishaBot/Trainings/All/'+adress.toString()
- const Files=fs.readdirSync(videoPath)
- videoPath=videoPath+"/"+getNumber(Files).toString()+"/"
- const dir=fs.readdirSync(videoPath)
- vid=""
- dir.forEach(name=>{
-  if (name[0]=="w"&name!="undefined"&name!="wundefined"){
-      vid=name
-  }})
-  if(vid==""){
-   dir.forEach(name=>{
-    if(name!="f"&name!="undefined"&name!="wundefined"){
-     vid=name
-    }
-   })
-  }
-  if(vid==""){
-   return
-  }
-
- console.log(dir)
- pth= await rem(videoPath,vid)
- pk=pth
- console.log("And this is path" + pk)
-
- videoStat = fs.statSync(pk)
- console.log("Yep")
- const fileSize = videoStat.size;
- const videoRange = req.headers.range;
- if (videoRange) {
-  const parts = videoRange.replace(/bytes=/, "").split("-");
-  const start = parseInt(parts[0], 10);
-  const end = parts[1]
-      ? parseInt(parts[1], 10)
-      : fileSize-1;
-  const chunksize = (end-start) + 1;
-  const file = fs.createReadStream(pk, {start, end});
-  const head = {
-   'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-   'Accept-Ranges': 'bytes',
-   'Content-Length': chunksize,
-   'Content-Type': 'video/mp4',
-  };
-  res.writeHead(206, head);
-  file.pipe(res);
- } else {
-  const head = {
-   'Content-Length': fileSize,
-   'Content-Type': 'video/mp4',
-  };
-  res.writeHead(200, head);
-  fs.createReadStream(pth).pipe(res);
+ console.log("Админ просматривает видео")
+ const mobile_number=req.params.id
+ var date=Number(await DB.geDate(mobile_number))-1
+ try{final_path=await additional.re(mobile_number,date,false)
+  if (final_path=="No"){res.send("No video")}
+  else{V_S.CreateStream(req,res,final_path)}}
+ catch (e){
+  console.log("все")
  }
-});
 
 
-
-
-
-
-
-app.post("/mobileapplication", async (req,res,next)=>{
- console.log(req.body)
+ });
+app.post("/mobile/:id", async (req,res,next)=>{
+ console.log("Фильтрация видео")
+ params=req.params.id.toString()
  message=req.body
- telegram_alert(message["approved"])
+ cc.metrica(params,message["value_or_plus"])
+});
+app.post("/commentere",async (req,res)=>{
+ console.log("Пользователь оставил комментарий")
+ message=req.body //google_sheets //date //type //comm
+ try{
+ mark_comment(message["ex"],message["date"],message["comm"],message["googlesheets"])
+ res.send("ok")}
+ catch (e){
+  res.send(e.toString())
+ }
+
+})
+app.post("/mobileapplication", async (req,res,next)=>{
+ console.log("Парметры пользователя обновлены")
+ message=req.body
+ NotifyUser(message["mobile"],message["approved"])
  DB.UpdateProperties("approved", message["approved"],message["mobile"])
  DB.UpdateProperties("diete",message["diete"],message["mobile"])
  DB.UpdateProperties("googleforms",message["googleforms"],message["mobile"])
@@ -102,20 +57,26 @@ app.post("/mobileapplication", async (req,res,next)=>{
  res.json("OK")
  next();
 });
-
-app.post("/mobile/:id", async (req,res,next)=>{
- params=req.params.id.toString()
- console.log(req.body)
- message=req.body
- cc.metrica(params,message["value_or_plus"])
-
-});
+app.get("/getTrain/:id",async (req,res)=>{
+ googletable=req.params.id.toString()
+ console.log("Была запрошена вся тренировка из гугл таблицы")
+ try{
+  res.send(await getTraining(googletable))
+ }
+ catch (err){
+  res.send("Err")
+ }
+})
+app.get("/mobileapplication", async (req, res, next)=>{
+ console.log("Showing all users")
+ res.setHeader("content-type","application/json")
+ res.json(await DB.getUsers())})
 
 
 
 
 app.listen(3000,"192.168.1.6",()=> {
  console.log("Server Launched!")
- setInterval(cc.starter,30000)
+ setInterval(cc.starter,3000)//Проверять каждые 30 секунд новые видео
 
 })

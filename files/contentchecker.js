@@ -1,22 +1,25 @@
 const fs = require("fs");
 const staticpath="/Users/shaya/PycharmProjects/MishaBot/Trainings/TrainingsVideos";
 const pathfortrainings="/Users/shaya/PycharmProjects/MishaBot/Trainings/All";
-module.exports={starter,getNumber,rem,metrica,filt}
-const parc=require("./parcer")
-const DB = require("./database");
-const additional = require("./Additional");
+module.exports={starter,rem,metrica}
+const parc=require("../GoogleTables/parcer")
+const DB = require("../additional/database");
+const add = require("./Additional");
+const {getNumber} = require("./Additional");
 
 async function starter(){
 
     console.log("Scanning videos in directory...")
-    const Files=filt(fs.readdirSync(staticpath));
+    const Files=add.filt(fs.readdirSync(staticpath));
     Files.forEach(async (file)=>{
         const mobilenumber=file.split("_")[0]
         date=await DB.geDate(mobilenumber)
         const action=file.split("_")[1].split(".")[0]
-        const exist=filt(fs.readdirSync(pathfortrainings));
-        console.log("Ok")
-        if(checkdirectory(exist,mobilenumber,file,date)==false){addnewdir(mobilenumber,file)}
+        const exist=add.filt(fs.readdirSync(pathfortrainings));
+        k=await checkdirectory(exist,mobilenumber,file,date)
+        if(k==false){addnewdir(mobilenumber,'/Users/shaya/PycharmProjects/MishaBot/Trainings/All')}
+
+
     });
     }
 
@@ -53,39 +56,35 @@ async function rem(firstpath,dir){
     }
 
 }
-function getNumber(massive){
-    var last=""
-    massive.forEach((element)=>{
-        if(element!='.DS_Store')
-        last=element.toString()
-    })
-    return last
-}
 
 async function checkdirectory(exist,mobilenumber,file,date){
     var k=false;
     exist.forEach( (num)=>{
         if (num==mobilenumber){
+            try{
             console.log("Папка существует")
-            const alltrainings=filt(fs.readdirSync(pathfortrainings+"/"+mobilenumber))
-            console.log(alltrainings)
+            const alltrainings=add.filt(fs.readdirSync(pathfortrainings+"/"+mobilenumber))
+            console.log(alltrainings.includes(date.toString()))
             if(alltrainings.includes(date.toString())){
                 l=pathfortrainings+"/"+mobilenumber+"/"+date.toString()
                 remove(file,l)
-                return true
+                k=true
             }
-            try{
+            else{
+                console.log("Continues")
+                console.log("ЖУЖУЖУ")
                 lastnum=Number(getNumber(alltrainings))+1
-                console.log(k)
+                console.log(lastnum)
                 l=pathfortrainings+"/"+mobilenumber+"/"+String(lastnum)
                 console.log(l)
                 fs.mkdirSync(l)
                 console.log("Создана новая папка тренировки"+l)
                 remove(file,l);
                 k=true;
-            }
+            }}
             catch (e){
-                l=pathfortrainings+"/"+mobilenumber+"/"+String(1);
+                console.log("AWdAwdadaxsax")
+                l='/Users/shaya/PycharmProjects/MishaBot/Trainings/All'+"/"+mobilenumber+"/"+String(1);
                 fs.mkdirSync(l)
                 console.log("Создана первая папка для нумерации тренировок");
                 remove(file,l);
@@ -95,12 +94,13 @@ async function checkdirectory(exist,mobilenumber,file,date){
     return k;
 }
 
-function addnewdir(mobilenumber,file){
+function addnewdir(mobilenumber,pathfortrainings){
+    console.log(`Acke`)
     fs.mkdirSync(pathfortrainings+"/"+mobilenumber)
     console.log("Новая папка создана")
     l=pathfortrainings+"/"+mobilenumber+"/"+String(1)
     fs.mkdirSync(l)
-    remove(file,l)
+    remove(pathfortrainings,l)
     console.log("Видео было впервые добавлено")
 }
 
@@ -109,11 +109,12 @@ async function metrica(adress,plus){
     var name=" "
     var date=Number(d)-1
     var videoPath = '/Users/shaya/PycharmProjects/MishaBot/Trainings/All/'+adress.toString()
-    var Attempt=additional.GetUserVideo(videoPath,date,false)
+    var Attempt=add.GetUserVideo(videoPath,date,false)
     if (Attempt=="No"){return}
     else{
         k=Attempt.toString().split("/")
         name=k[k.length-1]
+        console.log(k)
     }
     console.log("TTT "+name)
         if(name[0]=="w"&name!='wundefined'){
@@ -139,15 +140,10 @@ async function metrica(adress,plus){
             fs.rename(oldpath,newpath,err => {
                 console.log("Файл больше недоступен")
                 fs.close
-               // parc.Distributer(DataForGoogle["тренировка"],DataForGoogle["мобильный номер"],DataForGoogle["тип"],DataForGoogle["подход"],DataForGoogle["плюсы"])
+               // parc.Distributer(DB.geDate(adress.toString()),adress.toString(),DataForGoogle["тренировка"],DataForGoogle["тип"],DataForGoogle["подход"],DataForGoogle["плюсы"],DB.select_google_sheets(adress))
             })
 
 
         }
 
-}
-
-function filt(dir){
-    let newArray = dir.filter(function(f) { return f !== ".DS_Store" });
-    return newArray
 }
