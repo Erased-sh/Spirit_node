@@ -7,10 +7,8 @@ function GetUserVideo(videopath,date,Ack){ //Возвращает видео д�
     const dir=filt(fs.readdirSync(videoPath))
     massive=[]
     dir.forEach(name=>{if (name[0]=="w"&name!="undefined"&name!="wundefined"){massive.push(name)}})
-     console.log(massive)
      if(massive.length!=0){return videoPath+"/"+massive[0]}
      else{dir.forEach(name=>{if(name[0]!="f"&name!="undefined"&name!="wundefined"){massive.push(name)}})}
-     console.log(massive)
      if(massive.length!=0){return videoPath+"/"+massive[0]}
      else{
          console.log(Ack)

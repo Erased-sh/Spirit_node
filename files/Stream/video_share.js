@@ -30,7 +30,7 @@ function CreateStream(req,res,pk){
                 'Content-Type': 'video/mp4',
             };
             res.writeHead(200, head);
-            fs.createReadStream(pth).pipe(res);
+            fs.createReadStream(pk).pipe(res);
         }
 
 }

@@ -104,10 +104,11 @@ function addnewdir(mobilenumber,pathfortrainings){
     console.log("Видео было впервые добавлено")
 }
 
-async function metrica(adress,plus){
+async function metrica(adress,plus,comm){
     const d=await DB.geDate(adress)
     var name=" "
     var date=Number(d)-1
+
     var videoPath = '/Users/shaya/PycharmProjects/MishaBot/Trainings/All/'+adress.toString()
     var Attempt=add.GetUserVideo(videoPath,date,false)
     if (Attempt=="No"){return}
@@ -127,21 +128,24 @@ async function metrica(adress,plus){
                 "тренировка":""
             }
             oldpath=Attempt
-            console.log(oldpath)
             DataForGoogle["тип"]=l[0].slice(1).toString()
-            DataForGoogle["подход"]=l[1].toString()
+            DataForGoogle["подход"]=l[2].toString()
             DataForGoogle["плюсы"]=plus.toString()
-            DataForGoogle["тренировка"]=l[2].toString()
+            DataForGoogle["тренировка"]=await DB.geDate(adress.toString())
             var y=k
             y.pop()
-            console.log(y)
+            console.log("-----------------------")
+            console.log(DataForGoogle)
+
+            const google=await DB.select_google_sheets(adress.toString())
             newpath=y.join("/")+"/"+"f"+name.slice(1)
             console.log(newpath)
             fs.rename(oldpath,newpath,err => {
                 console.log("Файл больше недоступен")
                 fs.close
-               // parc.Distributer(DB.geDate(adress.toString()),adress.toString(),DataForGoogle["тренировка"],DataForGoogle["тип"],DataForGoogle["подход"],DataForGoogle["плюсы"],DB.select_google_sheets(adress))
             })
+            const url=adress.toString()+"/"+DataForGoogle["тренировка"]+"/"+"f"+name.slice(1)
+            parc.Distributer(DataForGoogle["тренировка"],adress.toString(),DataForGoogle["тип"],DataForGoogle["подход"],DataForGoogle["плюсы"],google,comm,url)
 
 
         }

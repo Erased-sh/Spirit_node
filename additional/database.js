@@ -46,20 +46,18 @@ async function tableexist(number){
     return massive.length
 }
 
-function UpdateExeciseWeight(massive){
-    pool.query("UPDATE f Set execises = $1, weight = $2",[massive[0],massive[1]]);}
 
-function UpdateE(massive){
-    UpdateExeciseWeight(massive)
-    for (var i=2; i<massive.length;i++){
-        var  e=i-1
-        console.log(e)
-        pool.query("UPDATE f Set e"+i+" = $1",[massive[i]])
-    }
+async function UpdateE(massive,mobilenum){
+    console.log(massive)
+    querry="INSERT INTO f"+mobilenum+" Values ( "+massive+" );"
+    console.log(querry)
+     await pool.query(querry)
+    console.log("успешно заимпортили")
 }
 function UpdateProperties(name,value,mobile){
-    pool.query("UPDATE mishabot Set "+name+" = $1 where number = $2",[value,mobile])
+    pool.query("UPDATE mishabot Set "+name+" = $1 where number = $2",[value.toString(),mobile.toString()])
 }
+
 async function getUsers(){
     var massive=[]
     const All_Users_In_Database=await pool.query("Select * FROM mishabot")
@@ -76,6 +74,48 @@ async function getUsers(){
     console.log(massive)
     return massive
 }
+async function reload_all(mobile_num,updateProperties,sec){
+    await drop_table_and_newCreate(mobile_num)
+    if (sec!=null){
+        await UpdateE(sec,mobile_num)
+        querry="Update f"+mobile_num+" Set type = 'p' where execises = "+sec[0][0]
+        await pool.query(querry)
+    }
+    await updateProperties.forEach(async row=>{
+           await UpdateE(row,mobile_num)
+           querry="update f"+mobile_num+" Set type = 'c' where execises = "+row[0]
+           await pool.query(querry)
+    })
+
+    console.log("Забито в таблицу")
+}
 
 
-module.exports={UpdateE,getUsers,pool,UpdateProperties,NotifyUser,geDate,tableexist,select_google_sheets}
+async function drop_table_and_newCreate(mobile_num){
+    await pool.query("Drop table f"+mobile_num)
+    await pool.query("create table f79164009726\n" +
+        "(\n" +
+        "    execises text,\n" +
+        "    weight   text,\n" +
+        "    e1       integer,\n" +
+        "    e1_color integer,\n" +
+        "    e2       integer,\n" +
+        "e2_color integer,\n" +
+        "    e3       integer,\n" +
+        "e3_color integer,\n" +
+        "    e4       integer,\n" +
+        "e4_color integer,\n" +
+        "    e5       integer,\n" +
+        "e5_color integer,\n" +
+        "    e6       integer,\n" +
+        "e6_color integer,\n" +
+        "    e7       integer,\n" +
+        "e7_color integer,\n" +
+        "    e8       integer,\n" +
+        "e8_color integer,\n" +
+        "type char\n"+
+        ")")
+    console.log("пересоздана")
+}
+
+module.exports={UpdateE,getUsers,select_chat_id,UpdateProperties,NotifyUser,geDate,tableexist,select_google_sheets,reload_all,drop_table_and_newCreate}
